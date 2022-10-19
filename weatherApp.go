@@ -1,12 +1,13 @@
-package weatherAppGo
+package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/tidwall/gjson"
 )
 
 // Write an interface which allows users to see if it is raining at a particular location,
@@ -32,10 +33,10 @@ type HourlyW struct {
 	Rain        []float64 `json:"rain"`
 }
 
-type Meteo struct{ endpoint string } //Meteo API
+type Meteo struct{ data string } //Meteo API
 
-func (w *Meteo) GetHourlyData(data string) HourlyW {
-	request := w.endpoint + "&hourly=" + data
+func (w *Meteo) GetLocationData(Lat float64, Long float64) {
+	request := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%v&longitude=%v&hourly=rain,temperature_2m,windspeed_10m", Lat, Long)
 	resp, err := http.Get(request)
 	if err != nil {
 		println(err)
@@ -43,25 +44,21 @@ func (w *Meteo) GetHourlyData(data string) HourlyW {
 	defer resp.Body.Close()
 
 	a, _ := io.ReadAll(resp.Body)
-	var str Weather
-	err = json.Unmarshal(a, &str)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return str.Hourly
+	// println(string(a))
+	w.data = "`" + string(a) + "`"
+	return
 }
 
 func (w *Meteo) GetRain() float64 {
-	return w.GetHourlyData("rain").Rain[0]
+	return gjson.Get(w.data, "hourly.rain").Array()[0].Float()
 }
 
 func (w *Meteo) GetTemp() float64 {
-	return w.GetHourlyData("temperature_2m").Temperature[0]
+	return gjson.Get(w.data, "hourly.temperature_2m").Array()[0].Float()
 }
 
 func (w *Meteo) GetWind() float64 {
-	return w.GetHourlyData("windspeed_10m").Wind[0]
+	return gjson.Get(w.data, "hourly.windspeed_10m").Array()[0].Float()
 }
 
 type RandWeather struct{ rGen rand.Rand }
@@ -82,7 +79,8 @@ func main() {
 	var w Iweather
 	//Create weather links
 	rw := RandWeather{*rand.New(rand.NewSource(time.Now().UnixNano()))}
-	aw := Meteo{"https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41"}
+	aw := Meteo{}
+	aw.GetLocationData(52.52, 13.41)
 
 	w = &aw
 
