@@ -61,18 +61,18 @@ func (w *Meteo) GetWind() float64 {
 	return gjson.Get(w.data, "hourly.windspeed_10m").Array()[0].Float()
 }
 
-type RandWeather struct{ rGen rand.Rand }
+type RandWeather struct{ RandGen rand.Rand }
 
 func (w *RandWeather) GetRain() float64 {
-	return float64(w.rGen.Intn(100)) / 10
+	return float64(w.RandGen.Intn(100)) / 10
 }
 
 func (w *RandWeather) GetTemp() float64 {
-	return float64(w.rGen.Intn(100)) / 10
+	return float64(w.RandGen.Intn(100)) / 10
 }
 
 func (w *RandWeather) GetWind() float64 {
-	return float64(w.rGen.Intn(100)) / 10
+	return float64(w.RandGen.Intn(100)) / 10
 }
 
 func main() {
