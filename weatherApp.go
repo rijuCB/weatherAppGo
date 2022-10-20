@@ -1,4 +1,4 @@
-package main
+package weatherApp
 
 import (
 	"fmt"
@@ -15,6 +15,7 @@ import (
 //   Implement it for one of the two APIs above using net/http and implement it for random weather.
 //   E.g. use a random number to pick the temperature.
 
+//go:generate go run github.com/golang/mock/mockgen -destination mocks/Iweather.go github.com/rijuCB/weatherAppGo Iweather
 type Iweather interface {
 	GetRain() float64 //Rain in mm
 	GetTemp() float64 //Temp in C
