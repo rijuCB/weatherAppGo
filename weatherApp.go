@@ -21,6 +21,20 @@ type Iweather interface {
 	GetWind() float64 //Wind speed
 }
 
+func CoallesceWeatherInfo(w Iweather) WeatherData {
+	return WeatherData{
+		Temperature: w.GetTemp(),
+		Wind:        w.GetWind(),
+		Rain:        w.GetRain(),
+	}
+}
+
+type WeatherData struct {
+	Temperature float64
+	Wind        float64
+	Rain        float64
+}
+
 type Weather struct {
 	Zone   string  `json:"timezone"`
 	Hourly HourlyW `json:"hourly"`
@@ -95,4 +109,5 @@ func main() {
 	fmt.Printf("Temp is %vC\n", w.GetTemp())
 	fmt.Printf("Wind is %vkmh\n", w.GetWind())
 
+	fmt.Println(CoallesceWeatherInfo(w))
 }
